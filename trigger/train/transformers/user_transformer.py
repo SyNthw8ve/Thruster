@@ -3,9 +3,9 @@ import numpy
 import pickle
 
 from typing import List
-from models.user import User
+from trigger.models.user import User
 
-from models.input_transformer import SentenceEmbedder
+from trigger.train.transformers.input_transformer import SentenceEmbedder
 
 class UserInstance:
 

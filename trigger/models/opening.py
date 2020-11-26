@@ -2,8 +2,8 @@ from typing import NamedTuple, List
 
 from dataclasses import dataclass
 
-from models.softskill import Softskill
-from models.hardskill import Hardskill
+from trigger.models.softskill import Softskill
+from trigger.models.hardskill import Hardskill
 
 @dataclass()
 class Opening:

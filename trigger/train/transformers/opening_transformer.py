@@ -3,8 +3,8 @@ import tensorflow as tf
 import pickle
 
 from typing import List
-from models.opening import Opening
-from models.input_transformer import SentenceEmbedder
+from trigger.models.opening import Opening
+from trigger.train.transformers.input_transformer import SentenceEmbedder
 
 class OpeningInstance:
 

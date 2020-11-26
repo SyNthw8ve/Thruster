@@ -1,8 +1,8 @@
 import os
 import logging
 
-from models.user_transformer import UserInstance
-from models.opening_transformer import OpeningInstance
+from trigger.train.transformers.user_transformer import UserInstance
+from trigger.train.transformers.opening_transformer import OpeningInstance
 
 from typing import List
 
