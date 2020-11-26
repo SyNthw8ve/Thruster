@@ -12,9 +12,10 @@ from algorithms.gturbo.node import Node
 from algorithms.gturbo.link import Link
 
 from algorithms import Processor
+from thruster.reaction_chamber.reactant import Reactant
 
 
-class GTurbo(Processor):
+class GTurbo(Processor, Reactant):
 
     def __init__(self, epsilon_b: float, epsilon_n: float, lam: int, beta: float,
                  alpha: float, max_age: int, r0: float,
@@ -332,76 +333,17 @@ class GTurbo(Processor):
 
         return f"GTurbo = epsilon_b={self.epsilon_b};epsilon_n={self.epsilon_n};lam={self.lam};beta={self.beta};alpha={self.alpha};max_age={self.max_age};radius={self.r0}"
 
-    def compute_cluster_score(self):
+    def apply_changes(self, param_change):
 
-        instance_dist = self._get_instances_per_node()
+        new_params = {'epsilon_b': param_change[0], 'lam': param_change[1],
+                      'max_age': param_change[2], 'r0': param_change[3]}
 
-        node_scores = []
+        return self.re_ignite(**new_params)
 
-        for node in self.graph.nodes.values():
+    def add_fuel(self, fuel_data):
 
-            if len(node.instances) > 0:
+        self.process(fuel_data.tag, fuel_data.instance)
 
-                node_dispersion_delta = self._compute_node_delta(node)
-                node_delta = np.power(node_dispersion_delta, 2)
+    def get_instances(self):
 
-                node_score = np.exp(-(node_delta))*np.log(len(node.instances))
-                node_scores.append(node_score)
-
-        return np.sum(node_scores)
-
-    def _get_instances_per_node(self):
-
-        return [len(node.instances) for node in self.graph.nodes.values() if len(node.instances) > 0]
-
-    def _mean_instances_per_node(self, num_instances):
-
-        return np.mean(num_instances)
-
-    def _std_instances_per_node(self, num_instances):
-        
-        return np.std(num_instances)
-
-    def _compute_node_delta(self, node):
-
-        instances = node.instances
-
-        if len(node.instances) == 1:
-
-            node_similarities = [1.0]
-
-        else:
-
-            node_similarities = self._get_similarities(instances)
-
-        sim_mean = self._get_mean_similarity(node_similarities)
-        sim_std = self._get_std_similarity(node_similarities)
-
-        node_dispersion = sim_std / sim_mean
-
-        return (node_dispersion - 1) / (np.power(5, 0.5) / 5)
-
-    def _get_similarities(self, instances):
-
-        node_similarities = []
-
-        for i in range(len(instances) - 1):
-
-            test_instance = self.instances[instances[i]]
-
-            for j in range(i + 1, len(instances)):
-
-                compare_instance = self.instances[instances[j]]
-
-                cos_sim = 1 - cosine(test_instance, compare_instance)
-                node_similarities.append(cos_sim)
-
-        return node_similarities
-
-    def _get_mean_similarity(self, similarities):
-
-        return np.mean(similarities)
-
-    def _get_std_similarity(self, similarities):
-
-        return np.var(similarities)
+        return self.instances.values()

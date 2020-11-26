@@ -5,18 +5,18 @@ from thruster.reaction_chamber.reactor import Reactor
 
 import numpy
 
-class Reaction(ABC):
+class Propulsion(ABC):
 
     def __init__(self) -> None:
 
-        self.reactions: numpy.array = []
+        self.propulsions: numpy.array = np.array([])
 
     @abstractmethod
-    def get_reaction_value(self) -> float:
+    def get_propulsion_value(self) -> float:
         pass
 
     @abstractmethod
-    def get_reaction_reward(self) -> float:
+    def get_propulsion_reward(self) -> float:
         pass
 
     @abstractmethod
@@ -25,4 +25,4 @@ class Reaction(ABC):
 
     def reset(self) -> None:
 
-        self.reactions = []
+        self.propulsions = np.array([])

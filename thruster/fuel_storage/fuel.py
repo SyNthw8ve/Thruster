@@ -13,6 +13,10 @@ class Fuel(ABC):
     def load_data(self, file_name: str):
         pass
 
+    def re_fuel(self):
+
+        self.iterator = iter(self.data)
+
     def get_fuel(self):
 
         try:
