@@ -32,5 +32,5 @@ class EReactor(Reactor):
     def get_action_specs(self) -> array_spec.BoundedArraySpec:
 
         return array_spec.BoundedArraySpec(
-            shape=(), dtype='int32', minimum=0,
+            shape=(1,), dtype='float32', minimum=0,
             maximum=len(self.param_grid) - 1, name='action')

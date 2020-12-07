@@ -6,7 +6,7 @@ from sklearn.preprocessing import normalize
 from scipy.stats import kurtosis, skew
 
 
-class GFuel2D(Fuel):
+class Fuel2D(Fuel):
 
     def __init__(self, file_name: str, num_instances: int) -> None:
 

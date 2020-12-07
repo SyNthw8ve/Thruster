@@ -13,20 +13,21 @@ from thruster.fuel_storage.fuel import Fuel
 
 class Chamber(py_environment.PyEnvironment):
 
-    def __init__(self, reactor: Reactor, propulsion: Propulsion, fuel: Fuel, episode_lenght: int=200):
+    def __init__(self, reactor: Reactor, propulsion: Propulsion, fuel: Fuel, observer: Observer, episode_lenght: int = 200):
 
         self._state = np.array(list(rd.choice(reactor.param_grid).values()))
+
         self._static_state = fuel.get_statistics()
-        
+
         self.propulsion = propulsion
         self.reactor = reactor
         self.fuel = fuel
+        self.observer = observer
+
         self.episode_lenght = episode_lenght
         self.episode_iteration = 0
 
-        self._observation_spec = array_spec.ArraySpec(
-            shape=(len(self._static_state) + 1,), dtype='float32', name='observation')
-
+        self._observation_spec = self.observer.get_observation_spec()
         self._action_spec = self.reactor.get_action_specs()
 
         self._episode_ended = False
@@ -42,12 +43,14 @@ class Chamber(py_environment.PyEnvironment):
         self.propulsion.reset()
         self.fuel.re_fuel()
 
-        self._state = np.array(list(rd.choice(self.reactor.param_grid).values()))
+        self._state = np.array(
+            list(rd.choice(self.reactor.param_grid).values()))
 
         self._episode_ended = False
         self.episode_iteration = 0
 
-        initial_observation = np.append(self._static_state, self._state).astype('float32')
+        initial_observation = self.observer.observe(
+            current_params=self._state, fuel=self.fuel, reward=0)
         return ts.restart(initial_observation)
 
     def _step(self, action):
@@ -61,7 +64,8 @@ class Chamber(py_environment.PyEnvironment):
         reward = self.propulsion.get_propulsion_reward(
             self.reactor, self.fuel.data)
 
-        observation = np.append(self._static_state, self._state).astype('float32')
+        observation = self.observer.observe(
+            current_params=self._state, fuel=self.fuel, reward=reward)
 
         self._state = self.reactor.get_current_params()
 
