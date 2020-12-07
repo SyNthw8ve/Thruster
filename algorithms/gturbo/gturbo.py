@@ -15,7 +15,7 @@ from algorithms import Processor
 from thruster.reaction_chamber.reactant import Reactant
 
 
-class GTurbo(Processor, Reactant):
+class GTurbo(Reactant):
 
     def __init__(self, epsilon_b: float, epsilon_n: float, lam: int, beta: float,
                  alpha: float, max_age: int, r0: float,
@@ -35,6 +35,8 @@ class GTurbo(Processor, Reactant):
         self.index = faiss.IndexIDMap(faiss.IndexFlatL2(dimensions))
 
         self.next_id = 2
+        self.data_id = 0
+
         self.point_to_cluster = {}
         self.instances = {}
         self.tag_to_data = {}
@@ -98,8 +100,6 @@ class GTurbo(Processor, Reactant):
 
         r = self.create_node(q, f, self.r0)
 
-        link = self.graph.get_link(q, f)
-
         q.remove_neighbor(f)
         f.remove_neighbor(q)
 
@@ -150,45 +150,33 @@ class GTurbo(Processor, Reactant):
 
         v, u = self.get_best_match(instance)
 
-        if self.distance(v.protype, instance) <= v.radius:
+        v.add_instance(tag)
+        self.instances[tag] = instance
 
-            v.add_instance(tag)
-            self.instances[tag] = instance
+        self.point_to_cluster[tag] = v.id
 
-            self.point_to_cluster[tag] = v.id
+        error_value = np.power(self.distance(
+            v.protype, instance), 2)[0]
 
-            error_value = np.power(self.distance(
-                v.protype, instance), 2)[0]
+        self.increment_error(v, error_value)
 
-            self.increment_error(v, error_value)
+        self.update_prototype(v, self.epsilon_b, instance)
 
-            self.update_prototype(v, self.epsilon_b, instance)
+        for node in v.topological_neighbors.values():
 
-            for node in v.topological_neighbors.values():
+            self.update_prototype(node, self.epsilon_n, instance)
 
-                self.update_prototype(node, self.epsilon_n, instance)
+        self.age_links(v)
 
-            self.age_links(v)
+        if not self.graph.has_link(v, u):
 
-            if not self.graph.has_link(v, u):
+            self.create_link(v, u)
 
-                self.create_link(v, u)
+        link = self.graph.get_link(v, u)
+        link.renew()
 
-            link = self.graph.get_link(v, u)
-            link.renew()
-
-            self.update_edges(v)
-            self.update_nodes()
-
-        else:
-
-            r = self.create_node_from_instance(instance, self.r0)
-            r.add_instance(tag)
-
-            self.instances[tag] = instance
-            self.point_to_cluster[tag] = r.id
-
-            self.create_link(v, r)
+        self.update_edges(v)
+        self.update_nodes()
 
     def decrease_error(self, v: Node) -> None:
 
@@ -260,6 +248,7 @@ class GTurbo(Processor, Reactant):
         for tag, instance in self.instances.items():
 
             new_turbo.turbo_step(tag, instance)
+            new_turbo.data_id += 1
 
         return new_turbo
 
@@ -342,8 +331,9 @@ class GTurbo(Processor, Reactant):
 
     def add_fuel(self, fuel_data):
 
-        self.process(fuel_data.tag, fuel_data.instance)
+        self.process(str(self.data_id), np.array(fuel_data))
+        self.data_id += 1
 
     def get_instances(self):
 
-        return self.instances.values()
+        return list(self.instances.values())

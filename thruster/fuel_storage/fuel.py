@@ -4,13 +4,18 @@ from abc import ABC, abstractmethod
 
 class Fuel(ABC):
 
-    def __init__(self, file_name: str) -> None:
+    def __init__(self, file_name: str, num_instances: int) -> None:
 
-        self.data = self.load_data(file_name)
+        self.file_name = file_name
+        self.data = self.load_data()[:num_instances]
         self.iterator = iter(self.data)
 
     @abstractmethod
-    def load_data(self, file_name: str):
+    def load_data(self):
+        pass
+
+    @abstractmethod
+    def get_statistics(self):
         pass
 
     def re_fuel(self):
@@ -19,12 +24,7 @@ class Fuel(ABC):
 
     def get_fuel(self):
 
-        try:
+        return next(self.iterator)
 
-            return next(self.iterator)
-
-        except StopIteration:
-            
-            return None
 
     

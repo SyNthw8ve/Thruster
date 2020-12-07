@@ -5,38 +5,48 @@ from thruster.reaction_chamber.reactor import Reactor
 from tf_agents.specs import array_spec
 from algorithms.gturbo.gturbo import GTurbo
 
+
 class GReactor(Reactor):
 
-    def __init__(self, initial_params, params_value_delta: Dict[str, np.array], params_limits: np.array) -> None:
+    def __init__(self, initial_params, params_domain: Dict[str, np.array]) -> None:
 
-        self.params_value_delta = params_value_delta
-        self.params_limits = params_limits
+        self.params_domain = params_domain
 
         super().__init__(GTurbo, initial_params)
 
-    def apply_reaction(self, action):
+    def run_initial_params(self, data):
 
-        current_params = self.get_current_params()
-        action_vector = np.array(
-            [action[0], int(round(action[1])), int(round(action[2])), action[3]])
+        for instance in data:
 
-        applied_change = current_params + action_vector
+            self.reactant.add_fuel(instance)
 
-        for i in range(len(current_params)):
+    def run(self, parameters, data):
 
-            if applied_change[i] <= self.params_limits[i]:
+        new_params = self.initial_params.copy()
 
-                applied_change[i] = current_params[i]
+        new_params['epsilon_b'] = parameters[0]
+        new_params['lam'] = int(parameters[1])
+        new_params['max_age'] = int(parameters[2])
+        new_params['r0'] = parameters[3]
 
-        self.reactant = self.reactant.apply_changes(applied_change)
-        
-    def current_params(self) -> np.array:
+        self.reactant = GTurbo(**new_params)
+
+        for instance in data:
+
+            self.reactant.add_fuel(instance)
+
+    def get_current_params(self) -> np.array:
 
         return np.array([self.reactant.epsilon_b, self.reactant.lam,
                          self.reactant.max_age, self.reactant.r0])
 
+    def get_initial_params(self) -> np.array:
+
+        return np.array([self.initial_params['epsilon_b'], self.initial_params['lam'],
+                         self.initial_params['max_age'], self.initial_params['r0']])
+
     def get_action_specs(self) -> array_spec.BoundedArraySpec:
 
         return array_spec.BoundedArraySpec(
-            shape=(len(self.reactant.initial_params),), dtype='float32', minimum=self.params_value_delta['min'],
-            maximum=self.params_value_delta['max'], name='action')
+            shape=(4,), dtype='float32', minimum=self.params_domain['min'],
+            maximum=self.params_domain['max'], name='action')

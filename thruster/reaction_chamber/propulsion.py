@@ -16,7 +16,7 @@ class Propulsion(ABC):
         pass
 
     @abstractmethod
-    def get_propulsion_reward(self) -> float:
+    def get_propulsion_reward(self, reactor: Reactor) -> float:
         pass
 
     @abstractmethod

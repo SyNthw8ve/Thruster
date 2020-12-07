@@ -6,19 +6,19 @@ from thruster.reaction_chamber.reactant import Reactant
 
 class Reactor(ABC):
 
-    def __init__(self, reactor_class, initial_params) -> None:
+    def __init__(self, reactor_class, param_grid) -> None:
 
         self.reactor_class = reactor_class
-        self.initial_params = initial_params
+        self.param_grid = param_grid
 
-        self.reactant: Reactant = self.reactor_class(**self.initial_params)
+        self.reactant = None
 
     def reset(self):
         
-        self.reactant = self.reactor_class(**self.initial_params)
+        self.reactant = None
 
     @abstractmethod
-    def apply_reaction(self, action):
+    def run(self, parameters, data):
         pass
 
     @abstractmethod
@@ -27,4 +27,8 @@ class Reactor(ABC):
 
     @abstractmethod
     def get_current_params(self) -> np.array:
+        pass
+
+    @abstractmethod
+    def get_initial_params(self) -> np.array:
         pass

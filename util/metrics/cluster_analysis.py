@@ -21,3 +21,16 @@ def eval_cluster(cluster: Processor) -> float:
         Ss = -1.0
 
     return Ss
+
+def eval_cluster_kmeans(cluster, data) -> float:
+
+    labels = cluster.labels_
+
+    try:
+
+        Ss = silhouette_score(data, labels)
+
+    except:
+        Ss = -1.0
+
+    return Ss

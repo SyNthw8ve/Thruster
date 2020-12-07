@@ -2,10 +2,10 @@ import numpy as np
 from thruster.reaction_chamber.propulsion import Propulsion
 from thruster.reaction_chamber.reactor import Reactor
 
-from util.metrics.cluster_analysis import eval_cluster
+from util.metrics.cluster_analysis import eval_cluster_kmeans
 from util.metrics.stability_analysis import compute_gain, compute_variations
 
-class GPropulsion(Propulsion):
+class KPropulsion(Propulsion):
 
     def __init__(self) -> None:
 
@@ -17,11 +17,11 @@ class GPropulsion(Propulsion):
         return np.sum(self.propulsions)
         #return compute_gain(variations)
 
-    def get_propulsion_reward(self, reactor: Reactor) -> float:
+    def get_propulsion_reward(self, reactor: Reactor, data) -> float:
         
-        return eval_cluster(reactor.reactant)
+        return eval_cluster_kmeans(reactor.reactant, data)
 
     def read_reactor_state(self, reactor: Reactor) -> None:
         
-        score_t = eval_cluster(reactor.reactant)
+        score_t = eval_cluster_kmeans(reactor.reactant)
         self.propulsions = np.append(self.propulsions, [score_t])

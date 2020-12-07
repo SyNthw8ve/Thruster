@@ -5,7 +5,7 @@ from thruster.reaction_chamber.reactor import Reactor
 from util.metrics.cluster_analysis import eval_cluster
 from util.metrics.stability_analysis import compute_gain, compute_variations
 
-class GPropulsion(Propulsion):
+class EPropulsion(Propulsion):
 
     def __init__(self) -> None:
 
@@ -17,7 +17,7 @@ class GPropulsion(Propulsion):
         return np.sum(self.propulsions)
         #return compute_gain(variations)
 
-    def get_propulsion_reward(self, reactor: Reactor) -> float:
+    def get_propulsion_reward(self, reactor: Reactor, data) -> float:
         
         return eval_cluster(reactor.reactant)
 

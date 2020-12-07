@@ -3,10 +3,10 @@ from util.readers.setup_reader import DataInitializer
 
 class GFuel(Fuel):
 
-    def __init__(self, file_name: str) -> None:
+    def __init__(self, file_name: str, num_instances: int) -> None:
 
-        super().__init__(file_name)
+        super().__init__(file_name, num_instances)
 
-    def load_data(self, file_name: str):
+    def load_data(self):
         
-        return DataInitializer.read_openings(file_name)
+        return DataInitializer.read_openings(self.file_name)
