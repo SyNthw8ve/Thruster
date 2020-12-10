@@ -1,12 +1,12 @@
-import tensorflow as tf
+import os
 
 from abc import ABC, abstractmethod
 
 class Fuel(ABC):
 
-    def __init__(self, file_name: str, num_instances: int) -> None:
+    def __init__(self, folder: str, file: str, num_instances: int) -> None:
 
-        self.file_name = file_name
+        self.file_name = os.path.join(folder, file)
         self.data = self.load_data()[:num_instances]
         self.iterator = iter(self.data)
 

@@ -28,7 +28,7 @@ class Chamber(py_environment.PyEnvironment):
         self.episode_iteration = 0
 
         self._observation_spec = self.observer.get_observation_spec()
-        self._action_spec = self.reactor.get_action_specs()
+        self._action_spec = self.reactor.get_action_spec()
 
         self._episode_ended = False
 

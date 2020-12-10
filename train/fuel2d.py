@@ -1,20 +1,20 @@
 import numpy as np
 
 from thruster.fuel_storage.fuel import Fuel
-from util.readers.reader_2d import Cluster2dReader
+from util.readers.reader_2d import Cluster2DReader
 from sklearn.preprocessing import normalize
 from scipy.stats import kurtosis, skew
 
 
 class Fuel2D(Fuel):
 
-    def __init__(self, file_name: str, num_instances: int) -> None:
+    def __init__(self, folder, file, num_instances: int) -> None:
 
-        super().__init__(file_name, num_instances)
+        super().__init__(folder, file, num_instances)
 
     def load_data(self):
 
-        data = Cluster2dReader.read_data(self.file_name)
+        data = Cluster2DReader.read_data(self.file_name)
 
         return normalize(data)
 

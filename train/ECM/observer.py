@@ -17,12 +17,12 @@ class EObserver(Observer):
 
     def observe(self, current_params, fuel: Fuel, reward: float):
 
-        return {'static_state': fuel.get_statistics(), 'current_params': current_params,
-                'current_score': reward}
+        return {'static_state': fuel.get_statistics().astype('float32'), 'current_params': current_params.astype('float32'),
+                'current_score': np.array(reward, dtype=np.float32)}
 
-    def get_observation_spec(self) -> array_spec.ArraySpec:
+    def get_observation_spec(self):
         return {
-            'static_state': array_spec.ArraySpec((16,), np.float32),
+            'static_state': array_spec.ArraySpec((14,), np.float32),
             'current_params': array_spec.ArraySpec((1,), np.float32),
-            'current_score': array_spec.ArraySpec((1,), np.float32)
+            'current_score': array_spec.ArraySpec((), np.float32)
         }

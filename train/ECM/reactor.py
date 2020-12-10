@@ -1,5 +1,6 @@
 from typing import Dict, List
 import numpy as np
+import tensorflow as tf
 
 from thruster.reaction_chamber.reactor import Reactor
 from tf_agents.specs import array_spec
@@ -13,7 +14,7 @@ class EReactor(Reactor):
 
     def run(self, action, data):
 
-        new_params = self.param_grid[action]
+        new_params = self.param_grid[int(action)]
 
         self.reactant = ECM(**new_params)
 
@@ -29,8 +30,8 @@ class EReactor(Reactor):
 
         return np.array([self.initial_params['distance_threshold']])
 
-    def get_action_specs(self) -> array_spec.BoundedArraySpec:
+    def get_action_spec(self) -> array_spec.BoundedArraySpec:
 
         return array_spec.BoundedArraySpec(
-            shape=(1,), dtype='float32', minimum=0,
+            shape=(), dtype='int32', minimum=0,
             maximum=len(self.param_grid) - 1, name='action')

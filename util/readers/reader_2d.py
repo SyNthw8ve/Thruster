@@ -1,6 +1,6 @@
 import numpy as np
 
-class Cluster2dReader:
+class Cluster2DReader:
 
     @staticmethod
     def read_data(file_name: str) -> np.array:

@@ -36,21 +36,17 @@ class ActorCritic(Network):
 
         self._single_action_spec = flat_action_spec[0]
 
-        if self._single_action_spec.dtype not in [float32, float64]:
-            raise ValueError(
-                'Only float actions are supported by this network.')
-
-        #kernel_initializer = VarianceScaling(scale=1. / 3., mode)
+        kernel_initializer = RandomUniform(minval=-0.003, maxval=0.003)
 
         self._encoder = EncodingNetwork(observation_spec,
-            preprocessing_layers=preprocessing_layers,
-            preprocessing_combiner=preprocessing_combiner,
-            conv_layer_params=conv_layer_params,
-            fc_layer_params=fc_layer_params,
-            dropout_layer_params=dropout_layer_params,
-            activation_fn=activation_fn,
-            #kernel_initializer=kernel_initializer,
-            batch_squash=False)
+                                        preprocessing_layers=preprocessing_layers,
+                                        preprocessing_combiner=preprocessing_combiner,
+                                        conv_layer_params=conv_layer_params,
+                                        fc_layer_params=fc_layer_params,
+                                        dropout_layer_params=dropout_layer_params,
+                                        activation_fn=activation_fn,
+                                        kernel_initializer=kernel_initializer,
+                                        batch_squash=False)
 
         initializer = RandomUniform(minval=-0.003, maxval=0.003)
 
@@ -61,8 +57,9 @@ class ActorCritic(Network):
             name='action')
 
     def call(self, observations, step_type=(), network_state=()):
-        
-        outer_rank =  nest_utils.get_outer_rank(observations, self.input_tensor_spec)
+
+        outer_rank = nest_utils.get_outer_rank(
+            observations, self.input_tensor_spec)
 
         batch_squash = BatchSquash(outer_rank)
         observations = nest.map_structure(batch_squash.flatten, observations)

@@ -22,7 +22,7 @@ class Reactor(ABC):
         pass
 
     @abstractmethod
-    def get_action_specs(self) -> array_spec.BoundedArraySpec:
+    def get_action_spec(self) -> array_spec.BoundedArraySpec:
         pass
 
     @abstractmethod
