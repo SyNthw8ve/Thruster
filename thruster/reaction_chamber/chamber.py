@@ -26,6 +26,7 @@ class Chamber(py_environment.PyEnvironment):
 
         self.episode_lenght = episode_lenght
         self.episode_iteration = 0
+        self.previous_action = -1
 
         self._observation_spec = self.observer.get_observation_spec()
         self._action_spec = self.reactor.get_action_spec()
@@ -48,6 +49,7 @@ class Chamber(py_environment.PyEnvironment):
 
         self._episode_ended = False
         self.episode_iteration = 0
+        self.previous_action = -1
 
         initial_observation = self.observer.observe(
             current_params=self._state, fuel=self.fuel, reward=0)
@@ -69,9 +71,10 @@ class Chamber(py_environment.PyEnvironment):
 
         self._state = self.reactor.get_current_params()
 
-        if self.episode_iteration < self.episode_lenght:
+        if (self.episode_iteration < self.episode_lenght) and (self.previous_action != action):
 
             self.episode_iteration += 1
+            self.previous_action = action
             return ts.transition(observation, reward=reward, discount=1.0)
 
         else:
