@@ -64,7 +64,7 @@ class Chamber(py_environment.PyEnvironment):
         self.reactor.run(action, self.fuel.data)
 
         reward = self.propulsion.get_propulsion_reward(
-            self.reactor, self.fuel.data)
+            self.reactor)
 
         observation = self.observer.observe(
             current_params=self._state, fuel=self.fuel, reward=reward)

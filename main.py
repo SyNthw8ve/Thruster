@@ -21,8 +21,8 @@ file_name = 'a1.txt'
 param_grid = build_tests(
     {'distance_threshold': [1, 0.1, 0.001, 0.0001, 0.01, 0.00005, 0.2, 0.002, 1.5]})
 
-fuel_train = Fuel2D(folder=data_folder, file=file_name, num_instances=500)
-fuel_eval = Fuel2D(folder=data_folder, file=file_name, num_instances=500)
+fuel_train = Fuel2D(folder=data_folder, file=file_name, num_instances=1000)
+fuel_eval = Fuel2D(folder=data_folder, file=file_name, num_instances=1000)
 
 reactor_train = EReactor(param_grid=param_grid)
 reactor_eval = EReactor(param_grid=param_grid)
@@ -33,9 +33,9 @@ propulsion_eval = EPropulsion()
 observer = EObserver()
 
 train_chamber = Chamber(reactor=reactor_train, propulsion=propulsion_train, observer=observer,
-                        fuel=fuel_train, episode_lenght=9)
+                        fuel=fuel_train, episode_lenght=200)
 eval_chamber = Chamber(reactor=reactor_eval, propulsion=propulsion_eval, observer=observer,
-                       fuel=fuel_eval, episode_lenght=9)
+                       fuel=fuel_eval, episode_lenght=200)
 
 train_chamber_tf = TFPyEnvironment(train_chamber)
 eval_chamber_tf = TFPyEnvironment(eval_chamber)
@@ -71,4 +71,5 @@ trainer = QTrainer(train_chamber=train_chamber_tf,
 trainer.run(replay_buffer_max_length=100000, num_iterations=20000,
             log_interval=500, eval_interval=1000, num_eval_episodes=20,
             collect_steps_per_iteration=1, batch_size=32, 
-            initial_collect_steps=1000, policy_save_path='./policies/q_rnn_early_stop')
+            initial_collect_steps=1000, policy_save_path='./policies/q_rnn_new_early')
+

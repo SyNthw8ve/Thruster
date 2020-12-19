@@ -17,7 +17,7 @@ class EPropulsion(Propulsion):
         return np.sum(self.propulsions)
         #return compute_gain(variations)
 
-    def get_propulsion_reward(self, reactor: Reactor, data) -> float:
+    def get_propulsion_reward(self, reactor: Reactor) -> float:
         
         return eval_cluster(reactor.reactant)
 
