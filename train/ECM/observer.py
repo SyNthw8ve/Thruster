@@ -17,7 +17,7 @@ class EObserver(Observer):
 
     def observe(self, current_params, fuel: Fuel, reward: float):
 
-        return {'static_state': fuel.get_statistics().astype('float32'), 'current_params': current_params.astype('float32'),
+        return {'static_state': fuel.get_full_statistics().astype('float32'), 'current_params': current_params.astype('float32'),
                 'current_score': np.array(reward, dtype=np.float32)}
 
     def get_observation_spec(self):

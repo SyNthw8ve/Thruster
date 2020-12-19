@@ -1,3 +1,4 @@
+from thruster.reaction_chamber.dynamic_chamber import DynamicChamber
 import tensorflow as tf
 
 from tf_agents.environments.tf_py_environment import TFPyEnvironment
@@ -11,18 +12,25 @@ from train.trainers.q_trainer import QTrainer
 from train.ECM.propulsion import EPropulsion
 from train.ECM.reactor import EReactor
 from train.ECM.observer import EObserver
+from train.ECM.dynamic_observer import EDynamicObserver
 from train.fuel2d import Fuel2D
+from train.injector2d import Injector2D
 
 from util.params.params import build_tests
 
 data_folder = './data/2D/ASets'
 file_name = 'a1.txt'
 
+num_instances = 2000
+
 param_grid = build_tests(
     {'distance_threshold': [1, 0.1, 0.001, 0.0001, 0.01, 0.00005, 0.2, 0.002, 1.5]})
 
-fuel_train = Fuel2D(folder=data_folder, file=file_name, num_instances=1000)
-fuel_eval = Fuel2D(folder=data_folder, file=file_name, num_instances=1000)
+fuel_train = Fuel2D(folder=data_folder, file=file_name, num_instances=num_instances)
+fuel_eval = Fuel2D(folder=data_folder, file=file_name, num_instances=num_instances)
+
+injector_train = Injector2D(fuel=fuel_train, min_quantity=10, max_quantity=num_instances)
+injector_eval = Injector2D(fuel=fuel_eval, min_quantity=10, max_quantity=num_instances)
 
 reactor_train = EReactor(param_grid=param_grid)
 reactor_eval = EReactor(param_grid=param_grid)
@@ -30,12 +38,19 @@ reactor_eval = EReactor(param_grid=param_grid)
 propulsion_train = EPropulsion()
 propulsion_eval = EPropulsion()
 
-observer = EObserver()
+# observer = EObserver()
 
-train_chamber = Chamber(reactor=reactor_train, propulsion=propulsion_train, observer=observer,
+dynamic_observer = EDynamicObserver()
+
+""" train_chamber = Chamber(reactor=reactor_train, propulsion=propulsion_train, observer=observer,
                         fuel=fuel_train, episode_lenght=200)
 eval_chamber = Chamber(reactor=reactor_eval, propulsion=propulsion_eval, observer=observer,
-                       fuel=fuel_eval, episode_lenght=200)
+                       fuel=fuel_eval, episode_lenght=200) """
+
+train_chamber = DynamicChamber(reactor=reactor_train, propulsion=propulsion_train, observer=dynamic_observer,
+                        injector=injector_train, episode_lenght=200)
+eval_chamber = DynamicChamber(reactor=reactor_eval, propulsion=propulsion_eval, observer=dynamic_observer,
+                       injector=injector_eval, episode_lenght=200)
 
 train_chamber_tf = TFPyEnvironment(train_chamber)
 eval_chamber_tf = TFPyEnvironment(eval_chamber)
@@ -71,5 +86,5 @@ trainer = QTrainer(train_chamber=train_chamber_tf,
 trainer.run(replay_buffer_max_length=100000, num_iterations=20000,
             log_interval=500, eval_interval=1000, num_eval_episodes=20,
             collect_steps_per_iteration=1, batch_size=32, 
-            initial_collect_steps=1000, policy_save_path='./policies/q_rnn_new_early')
+            initial_collect_steps=1000, policy_save_path='./policies/q_rnn_dynamic')
 

@@ -1,26 +1,26 @@
+from thruster.reaction_chamber.dynamic_observer import DynamicObserver
 import numpy as np
 import random as rd
 
 from tf_agents.environments import py_environment
 from tf_agents.trajectories import time_step as ts
-from tf_agents.specs import array_spec
 
 from thruster.reaction_chamber.observer import Observer
 from thruster.reaction_chamber.propulsion import Propulsion
 from thruster.reaction_chamber.reactor import Reactor
-from thruster.fuel_storage.fuel import Fuel
+from thruster.fuel_storage.injector import Injector
 
-class Chamber(py_environment.PyEnvironment):
+class DynamicChamber(py_environment.PyEnvironment):
 
-    def __init__(self, reactor: Reactor, propulsion: Propulsion, fuel: Fuel, observer: Observer, episode_lenght: int = 200):
+    def __init__(self, reactor: Reactor, propulsion: Propulsion, injector: Injector, observer: DynamicObserver, episode_lenght: int = 200):
 
         self._state = np.array(list(rd.choice(reactor.param_grid).values()))
 
-        self._static_state = fuel.get_full_data_statistics()
+        self._data_state = None
 
         self.propulsion = propulsion
         self.reactor = reactor
-        self.fuel = fuel
+        self.injector = injector
         self.observer = observer
 
         self.episode_lenght = episode_lenght
@@ -41,17 +41,20 @@ class Chamber(py_environment.PyEnvironment):
     def _reset(self):
 
         self.propulsion.reset()
-        self.fuel.re_fuel()
+        self.injector.inject()
 
         self._state = np.array(
             list(rd.choice(self.reactor.param_grid).values()))
 
+        self._data_state = self.injector.get_statistics()
+
         self._episode_ended = False
         self.episode_iteration = 0
+
         self.previous_action = -1
 
         initial_observation = self.observer.observe(
-            current_params=self._state, fuel=self.fuel, reward=0)
+            current_params=self._state, injector=self.injector, reward=0)
         return ts.restart(initial_observation)
 
     def _step(self, action):
@@ -66,7 +69,7 @@ class Chamber(py_environment.PyEnvironment):
             self.reactor)
 
         observation = self.observer.observe(
-            current_params=self._state, fuel=self.fuel, reward=reward)
+            current_params=self._state, injector=self.injector, reward=reward)
 
         self._state = self.reactor.get_current_params()
 
