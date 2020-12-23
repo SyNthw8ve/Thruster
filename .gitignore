@@ -1,10 +1,12 @@
 .vscode
+__pycache__
 
 trigger
 algorithms
 data
 policies
-test
+tests
 train
 results
+
 *.py
