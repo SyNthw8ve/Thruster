@@ -18,3 +18,6 @@ class Injector(ABC):
     def get_statistics(self):
         pass
 
+    @abstractmethod
+    def get_batch_statistics(self, data):
+        pass

@@ -14,5 +14,9 @@ class DynamicObserver(ABC):
         pass
 
     @abstractmethod
+    def observe_batch(self, current_params, injector: Injector, reward: float, data):
+        pass
+
+    @abstractmethod
     def get_observation_spec(self) -> array_spec.BoundedArraySpec:
         pass

@@ -63,7 +63,7 @@ class DynamicChamber(py_environment.PyEnvironment):
 
             self.reset()
 
-        self.reactor.run(action, self.fuel.data)
+        self.reactor.run(action, self.injector.current_data)
 
         reward = self.propulsion.get_propulsion_reward(
             self.reactor)

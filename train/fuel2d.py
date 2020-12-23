@@ -33,7 +33,7 @@ class Fuel2D(Fuel):
         kurtosis_mean = np.mean(data_kurtosis)
         kurtosis_std = np.std(data_kurtosis)
 
-        instances = len(self.data)
+        instances = len(data)
         log_instances = np.log(instances)
 
         data_dimension = 2
