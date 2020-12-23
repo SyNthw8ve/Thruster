@@ -6,8 +6,3 @@ class AgentNetwork(ABC):
 
     def __init__(self) -> None:
         pass
-        
-
-    @abstractmethod
-    def save_policy(self, path: str) -> None:
-        pass

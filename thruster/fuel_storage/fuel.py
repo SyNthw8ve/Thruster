@@ -15,7 +15,11 @@ class Fuel(ABC):
         pass
 
     @abstractmethod
-    def get_statistics(self):
+    def get_full_data_statistics(self):
+        pass
+
+    @abstractmethod
+    def get_partial_data_statistics(self, data):
         pass
 
     def re_fuel(self):

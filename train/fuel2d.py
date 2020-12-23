@@ -18,10 +18,10 @@ class Fuel2D(Fuel):
 
         return normalize(data)
 
-    def get_statistics(self) -> np.array:
+    def get_partial_data_statistics(self, data):
 
-        data_kurtosis = kurtosis(self.data)
-        data_skew = skew(self.data)
+        data_kurtosis = kurtosis(data)
+        data_skew = skew(data)
 
         skew_min = np.min(data_skew)
         skew_max = np.max(data_skew)
@@ -33,7 +33,7 @@ class Fuel2D(Fuel):
         kurtosis_mean = np.mean(data_kurtosis)
         kurtosis_std = np.std(data_kurtosis)
 
-        instances = len(self.data)
+        instances = len(data)
         log_instances = np.log(instances)
 
         data_dimension = 2
@@ -45,3 +45,7 @@ class Fuel2D(Fuel):
         return np.array([instances, log_instances, data_dimension, log_dimension, 
             inverse_data_dimension, inverse_log_dimension, kurtosis_min, kurtosis_max, kurtosis_mean, kurtosis_std,
             skew_min, skew_max, skew_mean, skew_std])
+
+    def get_full_data_statistics(self) -> np.array:
+
+        return self.get_partial_data_statistics(self.data)

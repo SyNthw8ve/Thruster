@@ -6,6 +6,7 @@ from thruster.agents.agent_network import AgentNetwork
 from tf_agents.replay_buffers import tf_uniform_replay_buffer
 from tf_agents.policies import random_tf_policy
 from tf_agents.utils import common
+from tf_agents.policies.policy_saver import PolicySaver
 
 class QTrainer(Trainer):
 
@@ -65,4 +66,5 @@ class QTrainer(Trainer):
                     step, avg_return))
                 returns.append(avg_return)
 
-        self.wrapper_agent.save_policy(policy_save_path)
+        tf_policy_saver = PolicySaver(self.tf_agent.policy)
+        tf_policy_saver.save(policy_save_path)

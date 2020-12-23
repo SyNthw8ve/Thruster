@@ -1,6 +1,5 @@
 from thruster.agents.agent_network import AgentNetwork
 from thruster.networks.q_rnn import QRnn
-from tf_agents.policies.policy_saver import PolicySaver
 from tf_agents.agents.dqn import dqn_agent
 
 
@@ -17,8 +16,3 @@ class DqnAgent(AgentNetwork):
             train_step_counter=train_step_counter)
 
         self.agent.initialize()
-
-    def save_policy(self, path: str) -> None:
-        
-        tf_policy_saver = PolicySaver(self.agent.policy)
-        tf_policy_saver.save(path)
